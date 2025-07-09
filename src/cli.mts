@@ -3,6 +3,7 @@ import { Readable } from "node:stream";
 import winston from "winston";
 import yargs from "yargs";
 import { compatNotes, compatStatements } from "./index.mjs";
+import { stats } from "./stats.mjs";
 
 const logger = winston.createLogger({
   level: "info",
@@ -16,6 +17,7 @@ const logger = winston.createLogger({
 const argv = yargs(process.argv.slice(2))
   .command("statements", "Output TSV for support statements")
   .command("notes", "Output TSV for notes")
+  .command("stats", "Output general stats")
   .option("verbose", {
     alias: "v",
     type: "boolean",
@@ -57,16 +59,12 @@ switch (argv._[0] as string) {
       note: "Note text",
     };
     break;
+  case "stats":
+    console.log(stats());
+    process.exit(0);
+  // eslint-disable-next-line no-fallthrough
   default:
     throw new Error("Unknown command");
-}
-
-function prettifyLink(value: string) {
-  if (value.startsWith("https://")) {
-    const url = new URL(value);
-    return `=HYPERLINK("${value}", "${url.pathname}")`;
-  }
-  return value;
 }
 
 dataStream
@@ -77,7 +75,13 @@ dataStream
       delimiter: "\t",
       cast: {
         boolean: (value) => (value ? "true" : "false"),
-        string: prettifyLink,
+        string: function prettifyLink(value: string) {
+          if (value.startsWith("https://")) {
+            const url = new URL(value);
+            return `=HYPERLINK("${value}", "${url.pathname}")`;
+          }
+          return value;
+        },
       },
     }),
   )

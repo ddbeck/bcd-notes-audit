@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
 
 const compat = new Compat();
 
-interface Note {
+export interface Note {
   referenceId: string;
   compatKey: string;
   description: string | undefined;
@@ -16,7 +16,7 @@ interface Note {
   note: string;
 }
 
-interface Statement {
+export interface Statement {
   referenceId: string;
   compatKey: string;
   description: string | undefined;
