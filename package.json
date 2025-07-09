@@ -16,6 +16,7 @@
     "@tsconfig/strictest": "^2.0.5",
     "@types/eslint__js": "^8.42.3",
     "@types/node": "^24.0.10",
+    "@types/yargs": "^17.0.33",
     "eslint": "^9.30.1",
     "prettier": "3.6.2",
     "tsx": "^4.20.3",
@@ -24,7 +25,6 @@
   },
   "dependencies": {
     "@mdn/browser-compat-data": "^6.0.29",
-    "@types/yargs": "^17.0.33",
     "compute-baseline": "^0.3.1-dev-20250703145713-fb97e85",
     "csv-stringify": "^6.5.2",
     "fastest-levenshtein": "^1.0.16",
