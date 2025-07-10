@@ -1,11 +1,10 @@
 import { coreBrowserSet } from "compute-baseline";
 import { Compat, Feature } from "compute-baseline/browser-compat-data";
-import { createHash } from "node:crypto";
 
 const compat = new Compat();
 
 export interface Note {
-  referenceId: string;
+  statementId: string;
   compatKey: string;
   description: string | undefined;
   mdn_url: string | undefined;
@@ -17,7 +16,7 @@ export interface Note {
 }
 
 export interface Statement {
-  referenceId: string;
+  statementId: string;
   compatKey: string;
   description: string | undefined;
   mdn_url: string | undefined;
@@ -30,7 +29,7 @@ export interface Statement {
 
 export function* compatNotes(): Generator<Note> {
   for (const node of walker()) {
-    const { compatKey, description, mdn_url } = node;
+    const { compatKey, description, mdn_url, index } = node;
     const browser = node.supportStatement.browser?.id as string;
     const version_added = node.supportStatement.version_added as string | false;
     const version_removed =
@@ -39,18 +38,7 @@ export function* compatNotes(): Generator<Note> {
 
     for (const note of notes(node.supportStatement.data.notes)) {
       yield {
-        referenceId: createHash("shake256", { outputLength: 4 })
-          .update(
-            [
-              compatKey,
-              browser,
-              version_added,
-              version_removed,
-              partial_implementation,
-              note,
-            ].join(""),
-          )
-          .digest("hex"),
+        statementId: `${compatKey}.${browser}.${index}`,
         compatKey,
         description,
         mdn_url,
@@ -75,7 +63,7 @@ export function* compatStatements(): Generator<Statement> {
     const notesCount = notes(node.supportStatement.data.notes).length;
 
     yield {
-      referenceId: `${compatKey}.${browser}.${index}`,
+      statementId: `${compatKey}.${browser}.${index}`,
       compatKey,
       description,
       mdn_url,

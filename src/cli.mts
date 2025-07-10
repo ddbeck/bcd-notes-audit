@@ -35,7 +35,7 @@ switch (argv._[0] as string) {
   case "statements":
     dataStream = Readable.from(compatStatements());
     columns = {
-      referenceId: "Reference ID",
+      statementId: "Statement ID",
       description: "Description",
       mdn_url: "MDN URL",
       browser: "Browser ID",
@@ -48,7 +48,7 @@ switch (argv._[0] as string) {
   case "notes":
     dataStream = Readable.from(compatNotes());
     columns = {
-      referenceId: "Reference ID",
+      statementId: "Statement ID",
       compatKey: "Compat key",
       description: "Description",
       mdn_url: "MDN URL",
