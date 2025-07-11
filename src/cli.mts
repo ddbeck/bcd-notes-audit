@@ -2,7 +2,7 @@ import { stringify } from "csv-stringify";
 import { Readable } from "node:stream";
 import winston from "winston";
 import yargs from "yargs";
-import { compatNotes, compatStatements } from "./index.mjs";
+import { compatNotes, compatStatements, Note, Statement } from "./index.mjs";
 import { stats } from "./stats.mjs";
 
 const logger = winston.createLogger({
@@ -29,33 +29,41 @@ const argv = yargs(process.argv.slice(2))
   .parseSync();
 
 let dataStream;
-let columns;
+
+let columns:
+  | { [Property in keyof Note]: string }
+  | {
+      [Property in keyof Statement]: string;
+    };
+
+const commonColumns: { [Property in keyof Note & keyof Statement]: string } = {
+  statementId: "Statement ID",
+
+  compatKey: "Compat key",
+  description: "Description",
+  mdn_url: "MDN URL",
+
+  browser: "Browser ID",
+  nameVariant: "Alt/prefix name",
+  flagged: "Has flags",
+
+  version_added: "version_added",
+  version_removed: "version_removed",
+  partial_implementation: "partial_implementation",
+};
 
 switch (argv._[0] as string) {
   case "statements":
     dataStream = Readable.from(compatStatements());
     columns = {
-      statementId: "Statement ID",
-      description: "Description",
-      mdn_url: "MDN URL",
-      browser: "Browser ID",
-      version_added: "version_added",
-      version_removed: "version_removed",
-      partial_implementation: "partial_implementation",
+      ...commonColumns,
       notesCount: "Notes count",
     };
     break;
   case "notes":
     dataStream = Readable.from(compatNotes());
     columns = {
-      statementId: "Statement ID",
-      compatKey: "Compat key",
-      description: "Description",
-      mdn_url: "MDN URL",
-      browser: "Browser ID",
-      version_added: "version_added",
-      version_removed: "version_removed",
-      partial_implementation: "partial_implementation",
+      ...commonColumns,
       note: "Note text",
     };
     break;
